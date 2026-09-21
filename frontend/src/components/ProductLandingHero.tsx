@@ -1,17 +1,15 @@
 'use client'
 
+import { ProductPreviewFrame } from './ProductPreviewFrame'
+
 interface ProductLandingHeroProps {
   onLaunchStudio: () => void
-  onExploreCorpus: () => void
 }
 
-export function ProductLandingHero({
-  onLaunchStudio,
-  onExploreCorpus,
-}: ProductLandingHeroProps) {
+export function ProductLandingHero({ onLaunchStudio }: ProductLandingHeroProps) {
   return (
-    <section className="text-center space-y-6 max-w-3xl mx-auto pt-4">
-      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 shadow-xs">
+    <section className="text-center max-w-4xl mx-auto space-y-8">
+      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-black/[0.08] text-xs font-semibold text-rose-600 shadow-xs">
         <svg
           className="w-3.5 h-3.5 text-rose-600"
           viewBox="0 0 24 24"
@@ -23,26 +21,23 @@ export function ProductLandingHero({
         >
           <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
         </svg>
-        <span>TypeSafe AI System One Architecture</span>
+        <span>TypeSafe AI · System One Architecture</span>
       </div>
 
-      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-950 tracking-tight leading-[1.12]">
-        Fuzzy decisions in code.{' '}
-        <span className="bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 bg-clip-text text-transparent">
-          Calibrated under 100ms.
-        </span>
+      <h1 className="text-5xl sm:text-6xl font-extrabold text-zinc-950 tracking-tight leading-[1.08]">
+        Fuzzy decisions in code. <br />
+        <span className="metallic-text">Calibrated under 100ms.</span>
       </h1>
 
-      <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-        Autonomous software cannot depend on 5-second autoregressive text generation.
+      <p className="text-lg text-zinc-600 leading-relaxed max-w-2xl mx-auto font-normal">
         PrismOne embeds TypeSafe&apos;s Jev model directly into code for high-throughput
         semantic re-ranking, document classification, and zero-violation schema enforcement.
       </p>
 
-      <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
+      <div className="flex items-center justify-center gap-3 pt-2">
         <button
           onClick={onLaunchStudio}
-          className="px-7 py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-600 to-rose-700 text-white font-semibold text-sm shadow-lg shadow-rose-500/25 transition-all flex items-center gap-2 hover:opacity-95"
+          className="metallic-button px-7 py-3.5 rounded-xl font-semibold text-sm flex items-center gap-2"
         >
           <span>Launch Search Studio</span>
           <svg
@@ -58,34 +53,34 @@ export function ProductLandingHero({
             <polyline points="12 5 19 12 12 19" />
           </svg>
         </button>
-        <button
-          onClick={onExploreCorpus}
-          className="px-6 py-3.5 rounded-2xl bg-white/90 border border-rose-200 text-rose-900 font-semibold text-sm hover:bg-rose-50/60 transition-colors shadow-xs"
-        >
-          Explore Document Corpus
-        </button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 text-left">
-        <div className="bg-white/85 backdrop-blur-xl border border-rose-200/80 rounded-3xl p-6 text-center space-y-1 shadow-xs">
-          <div className="text-3xl font-extrabold font-mono text-slate-900">84ms</div>
-          <div className="text-xs font-bold uppercase tracking-wider text-rose-700">P50 Latency</div>
-          <p className="text-[11px] text-slate-500">Real-time user keystroke speed</p>
+      <ProductPreviewFrame />
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 text-left">
+        <div className="bg-white border border-black/[0.07] rounded-2xl p-7 space-y-2 shadow-xs">
+          <h4 className="text-base font-bold text-zinc-950 tracking-tight">Sub-100ms Latency</h4>
+          <p className="text-xs text-zinc-600 leading-relaxed">
+            Non-autoregressive parallel scoring eliminates the slow token-by-token loop,
+            guaranteeing real-time keystroke speed.
+          </p>
+          <span className="font-mono text-xs font-semibold text-rose-600 block pt-1">84ms P50 Latency</span>
         </div>
-        <div className="bg-white/85 backdrop-blur-xl border border-rose-200/80 rounded-3xl p-6 text-center space-y-1 shadow-xs">
-          <div className="text-3xl font-extrabold font-mono text-rose-600">0%</div>
-          <div className="text-xs font-bold uppercase tracking-wider text-rose-700">Schema Errors</div>
-          <p className="text-[11px] text-slate-500">Mathematically typed outputs</p>
+
+        <div className="bg-white border border-black/[0.07] rounded-2xl p-7 space-y-2 shadow-xs">
+          <h4 className="text-base font-bold text-zinc-950 tracking-tight">Zero Type Errors</h4>
+          <p className="text-xs text-zinc-600 leading-relaxed">
+            Structured decisions with mathematical guarantees. Output fields match your schema with 0% JSON syntax failures.
+          </p>
+          <span className="font-mono text-xs font-semibold text-rose-600 block pt-1">0% Schema Violations</span>
         </div>
-        <div className="bg-white/85 backdrop-blur-xl border border-rose-200/80 rounded-3xl p-6 text-center space-y-1 shadow-xs">
-          <div className="text-3xl font-extrabold font-mono text-slate-900">$0.042</div>
-          <div className="text-xs font-bold uppercase tracking-wider text-rose-700">Per 1M Input Tokens</div>
-          <p className="text-[11px] text-slate-500">100x cheaper than LLMs</p>
-        </div>
-        <div className="bg-white/85 backdrop-blur-xl border border-rose-200/80 rounded-3xl p-6 text-center space-y-1 shadow-xs">
-          <div className="text-3xl font-extrabold font-mono text-emerald-600">FREE</div>
-          <div className="text-xs font-bold uppercase tracking-wider text-emerald-700">Output Tokens</div>
-          <p className="text-[11px] text-slate-500">Outputs too cheap to meter</p>
+
+        <div className="bg-white border border-black/[0.07] rounded-2xl p-7 space-y-2 shadow-xs">
+          <h4 className="text-base font-bold text-zinc-950 tracking-tight">100x Cost Reduction</h4>
+          <p className="text-xs text-zinc-600 leading-relaxed">
+            Input tokens billed at $0.042 per million, while decision output tokens are completely free. High volume is too cheap to meter.
+          </p>
+          <span className="font-mono text-xs font-semibold text-rose-600 block pt-1">$0.042 / 1M Input Tokens</span>
         </div>
       </div>
     </section>
