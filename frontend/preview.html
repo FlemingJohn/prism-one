@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-[#fafafc]">
+<html lang="en" class="h-full bg-[#faf8fa]">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PrismOne — Machine-Native Semantic Re-ranking Studio</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -17,17 +17,17 @@
             mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
-            primary: {
-              50: '#fdf2f8',
-              100: '#fce7f3',
-              200: '#fbcfe8',
-              300: '#f9a8d4',
-              400: '#f472b6',
-              500: '#e551ba',
-              600: '#d23ea7',
-              700: '#be185d',
-              800: '#9d174d',
-              900: '#831843',
+            metallic: {
+              50: '#fff1f4',
+              100: '#ffe4e8',
+              200: '#fecdd6',
+              300: '#fda4b4',
+              400: '#fb718d',
+              500: '#f43f68',
+              600: '#e11d4d',
+              700: '#be123c',
+              800: '#9f1237',
+              900: '#881333',
             }
           }
         }
@@ -35,14 +35,28 @@
     }
   </script>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #fafafc;
+      background-color: #faf8fa;
       color: #0f172a;
+      overflow-x: hidden;
     }
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
     }
+
+    .page-view {
+      display: none !important;
+    }
+    .page-view.active-view {
+      display: flex !important;
+    }
+
     #shader-canvas {
       position: fixed;
       top: 0;
@@ -51,52 +65,129 @@
       height: 100vh;
       pointer-events: none;
       z-index: 0;
-      opacity: 0.55;
+      opacity: 0.65;
     }
-    .glass-card {
+
+    .metallic-glass {
       background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(252, 231, 243, 0.9);
-      box-shadow: 0 4px 30px -4px rgba(229, 81, 186, 0.05), 0 1px 2px rgba(15, 23, 42, 0.02);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(244, 63, 104, 0.22);
+      box-shadow: 
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.95),
+        0 12px 36px -4px rgba(225, 29, 77, 0.08),
+        0 2px 6px 0 rgba(15, 23, 42, 0.03);
     }
-    .glass-nav {
-      background: rgba(255, 255, 255, 0.82);
+
+    .metallic-card-hover {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .metallic-card-hover:hover {
+      transform: translateY(-2px);
+      border-color: rgba(244, 63, 104, 0.45);
+      box-shadow: 
+        inset 0 1px 2px 0 rgba(255, 255, 255, 1),
+        0 20px 40px -8px rgba(225, 29, 77, 0.14),
+        0 4px 12px 0 rgba(15, 23, 42, 0.04);
+    }
+
+    .metallic-header {
+      background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(252, 231, 243, 0.9);
+      border-bottom: 1px solid rgba(244, 63, 104, 0.2);
     }
-    .pink-focus-ring:focus-within {
-      box-shadow: 0 0 0 3px rgba(229, 81, 186, 0.16), 0 8px 30px -4px rgba(229, 81, 186, 0.15);
-      border-color: #e551ba;
+
+    .metallic-button {
+      background: linear-gradient(135deg, #fb718d 0%, #e11d4d 50%, #9f1237 100%);
+      box-shadow: 
+        inset 0 1px 1px rgba(255, 255, 255, 0.55),
+        inset 0 -1px 2px rgba(136, 19, 51, 0.4),
+        0 4px 18px -2px rgba(225, 29, 77, 0.4);
+      transition: all 0.2s ease;
+      color: #ffffff;
     }
-    .bar-gradient {
-      background: linear-gradient(90deg, #e551ba 0%, #fb7185 100%);
-      box-shadow: 0 0 12px rgba(229, 81, 186, 0.3);
+    .metallic-button:hover {
+      background: linear-gradient(135deg, #fda4b4 0%, #f43f68 50%, #be123c 100%);
+      box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.7),
+        0 6px 24px -2px rgba(225, 29, 77, 0.55);
+      transform: translateY(-1px);
     }
-    .scrollbar-thin::-webkit-scrollbar {
+    .metallic-button:active {
+      transform: translateY(0);
+      box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.2),
+        0 2px 8px rgba(225, 29, 77, 0.3);
+    }
+
+    .metallic-button-secondary {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(244, 63, 104, 0.3);
+      color: #9f1237;
+      box-shadow: 
+        inset 0 1px 1px rgba(255, 255, 255, 0.9),
+        0 2px 8px -1px rgba(225, 29, 77, 0.08);
+      transition: all 0.2s ease;
+    }
+    .metallic-button-secondary:hover {
+      background: #fff1f4;
+      border-color: rgba(244, 63, 104, 0.5);
+      color: #881333;
+    }
+
+    .metallic-badge {
+      background: linear-gradient(135deg, rgba(255, 241, 244, 0.95) 0%, rgba(255, 228, 232, 0.85) 100%);
+      border: 1px solid rgba(244, 63, 104, 0.35);
+      color: #be123c;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .metallic-badge-active {
+      background: linear-gradient(135deg, #f43f68 0%, #be123c 100%);
+      color: #ffffff;
+      border: 1px solid #9f1237;
+      box-shadow: 0 2px 8px rgba(225, 29, 77, 0.35);
+    }
+
+    .metallic-hero-gradient {
+      background: linear-gradient(135deg, #e11d4d 0%, #f43f68 40%, #d97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .metallic-bar-fill {
+      background: linear-gradient(90deg, #fb718d 0%, #e11d4d 50%, #9f1237 100%);
+      box-shadow: 0 0 12px rgba(225, 29, 77, 0.45);
+    }
+
+    ::-webkit-scrollbar {
       width: 6px;
+      height: 6px;
     }
-    .scrollbar-thin::-webkit-scrollbar-thumb {
-      background: #fbcfe8;
+    ::-webkit-scrollbar-track {
+      background: #faf8fa;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(244, 63, 104, 0.25);
       border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(244, 63, 104, 0.5);
     }
   </style>
 </head>
-<body class="min-h-full flex flex-col antialiased selection:bg-pink-100 selection:text-pink-700 relative">
+<body class="min-h-full flex flex-col antialiased selection:bg-rose-100 selection:text-rose-800 relative">
 
-  <!-- WEBGL FLUID SHADER CANVAS -->
   <canvas id="shader-canvas"></canvas>
 
-  <!-- APP CONTAINER -->
   <div class="relative z-10 flex flex-col min-h-screen">
 
-    <!-- GLOBAL HEADER -->
-    <header class="glass-nav h-16 px-6 flex items-center justify-between sticky top-0 z-40">
-      <div class="flex items-center gap-3">
-        <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-primary-500 to-rose-400 p-[1px] shadow-sm shadow-primary-500/20">
+    <header class="metallic-header h-16 px-6 flex items-center justify-between sticky top-0 z-40">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('landing')">
+        <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-rose-500 via-pink-600 to-amber-400 p-[1px] shadow-sm shadow-rose-500/25">
           <div class="h-full w-full bg-white rounded-[11px] flex items-center justify-center">
-            <svg class="w-5 h-5 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="w-5 h-5 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
               <polyline points="2 17 12 22 22 17"></polyline>
               <polyline points="2 12 12 17 22 12"></polyline>
@@ -105,25 +196,24 @@
         </div>
         <div class="flex items-baseline gap-2">
           <span class="font-bold text-slate-900 tracking-tight text-lg">PrismOne</span>
-          <span class="text-[11px] font-semibold text-primary-600 bg-primary-50 border border-primary-200 px-2 py-0.5 rounded-full font-mono">
+          <span class="text-[10px] font-semibold metallic-badge px-2 py-0.5 rounded-full font-mono uppercase tracking-wider">
             SYSTEM ONE
           </span>
         </div>
       </div>
 
-      <!-- MAIN PAGE NAVIGATION TABS -->
-      <nav class="flex items-center gap-1 bg-slate-100/80 p-1 rounded-2xl border border-slate-200/60 text-xs font-medium">
-        <button onclick="navigateTo('landing')" id="tab-landing" class="px-3.5 py-1.5 rounded-xl transition-all font-semibold bg-white text-primary-600 shadow-xs border border-pink-100">
-          Product
+      <nav class="flex items-center gap-1 bg-white/80 p-1 rounded-2xl border border-rose-200/60 shadow-xs text-xs font-medium">
+        <button onclick="navigateTo('landing')" id="tab-landing" class="px-4 py-1.5 rounded-xl transition-all font-semibold metallic-badge-active">
+          Product Overview
         </button>
-        <button onclick="navigateTo('studio')" id="tab-studio" class="px-3.5 py-1.5 rounded-xl transition-all text-slate-600 hover:text-slate-900">
+        <button onclick="navigateTo('studio')" id="tab-studio" class="px-4 py-1.5 rounded-xl transition-all text-slate-600 hover:text-slate-900 hover:bg-rose-50/50">
           Search Studio
         </button>
-        <button onclick="navigateTo('corpus')" id="tab-corpus" class="px-3.5 py-1.5 rounded-xl transition-all text-slate-600 hover:text-slate-900">
+        <button onclick="navigateTo('corpus')" id="tab-corpus" class="px-4 py-1.5 rounded-xl transition-all text-slate-600 hover:text-slate-900 hover:bg-rose-50/50">
           Document Corpus
         </button>
-        <button onclick="navigateTo('evals')" id="tab-evals" class="px-3.5 py-1.5 rounded-xl transition-all text-slate-600 hover:text-slate-900">
-          Calibration
+        <button onclick="navigateTo('evals')" id="tab-evals" class="px-4 py-1.5 rounded-xl transition-all text-slate-600 hover:text-slate-900 hover:bg-rose-50/50">
+          RLCD Calibration
         </button>
       </nav>
 
@@ -133,158 +223,294 @@
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span class="font-mono text-[11px]">jev-latest</span>
+          <span class="font-mono text-[11px]">jev-system-one</span>
           <span class="text-slate-300">|</span>
-          <span class="font-mono text-[11px] text-emerald-800">84ms</span>
+          <span class="font-mono text-[11px] text-emerald-800 font-semibold">84ms P50</span>
         </div>
 
-        <a href="https://docs.typesafe.ai" target="_blank" class="hidden md:inline-flex items-center gap-1 text-slate-500 hover:text-primary-600 transition-colors font-medium">
-          <span>Docs</span>
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
+        <button onclick="navigateTo('studio')" class="metallic-button px-4 py-1.5 rounded-xl font-medium text-xs flex items-center gap-1.5">
+          <span>Launch Studio</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
           </svg>
-        </a>
-
-        <button class="px-4 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium transition-colors shadow-xs">
-          Console
         </button>
       </div>
     </header>
 
-    <!-- ========================================================================= -->
-    <!-- PAGE 1: LANDING PAGE -->
-    <!-- ========================================================================= -->
-    <main id="page-landing" class="page-view flex-1 overflow-y-auto">
-      <div class="max-w-6xl mx-auto px-6 pt-16 pb-24 space-y-20">
-        
-        <!-- HERO -->
-        <div class="text-center space-y-6 max-w-3xl mx-auto">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/90 border border-primary-200 shadow-xs text-xs font-semibold text-primary-600">
-            <svg class="w-3.5 h-3.5 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <main id="view-landing" class="page-view active-view flex-1 flex-col overflow-y-auto">
+      <div class="max-w-6xl mx-auto px-6 pt-16 pb-28 space-y-24 w-full">
+
+        <section class="text-center space-y-6 max-w-3xl mx-auto pt-4">
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full metallic-badge text-xs font-semibold shadow-xs">
+            <svg class="w-3.5 h-3.5 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
             </svg>
-            <span>Reinforcement Learning for Calibrated Decisions</span>
+            <span>TypeSafe AI System One Architecture</span>
           </div>
 
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-950 tracking-tight leading-[1.12]">
-            Machine-native decisions. <br>
-            <span class="bg-gradient-to-r from-primary-500 via-pink-500 to-rose-400 bg-clip-text text-transparent">
-              Sub-100 millisecond latency.
+            Fuzzy decisions in code. <br>
+            <span class="metallic-hero-gradient">
+              Calibrated under 100ms.
             </span>
           </h1>
 
           <p class="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
-            Autonomous software cannot afford 5-second autoregressive text generation. PrismOne embeds TypeSafe's Jev model directly into your retrieval pipelines for type-safe semantic ranking, category routing, and risk detection.
+            Autonomous software cannot depend on 5-second autoregressive text generation. PrismOne embeds TypeSafe's Jev model directly into code for high-throughput semantic re-ranking, document classification, and zero-violation schema enforcement.
           </p>
 
-          <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <button onclick="navigateTo('studio')" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-primary-500 to-rose-400 hover:from-primary-600 hover:to-rose-500 text-white font-semibold text-sm shadow-md shadow-primary-500/25 transition-all flex items-center gap-2">
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-3">
+            <button onclick="navigateTo('studio')" class="metallic-button px-7 py-3.5 rounded-2xl font-semibold text-sm flex items-center gap-2 shadow-lg shadow-rose-500/25">
               <span>Launch Search Studio</span>
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
                 <polyline points="12 5 19 12 12 19"></polyline>
               </svg>
             </button>
-            <div class="flex items-center gap-2 px-4 py-3 rounded-2xl bg-white/90 border border-pink-100 text-xs font-mono text-slate-600 shadow-xs">
-              <span class="text-primary-600 font-bold">$0.042</span>
-              <span>/ 1M Input Tokens (Outputs Free)</span>
-            </div>
+            <button onclick="navigateTo('corpus')" class="metallic-button-secondary px-6 py-3.5 rounded-2xl font-semibold text-sm flex items-center gap-2">
+              <span>Explore Document Corpus</span>
+            </button>
           </div>
-        </div>
+        </section>
 
-        <!-- TELEMETRY PILLARS -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="glass-card rounded-3xl p-6 text-center space-y-1">
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="metallic-glass rounded-3xl p-6 text-center space-y-1 metallic-card-hover">
             <div class="text-3xl font-extrabold font-mono text-slate-900">84ms</div>
-            <div class="text-xs font-bold uppercase tracking-wider text-primary-600">Decision Latency</div>
-            <p class="text-[11px] text-slate-500">Fast enough for real-time user keystrokes</p>
+            <div class="text-xs font-bold uppercase tracking-wider text-rose-700">P50 Latency</div>
+            <p class="text-[11px] text-slate-500">Real-time user keystroke speed</p>
           </div>
-          <div class="glass-card rounded-3xl p-6 text-center space-y-1">
-            <div class="text-3xl font-extrabold font-mono text-primary-500">0%</div>
-            <div class="text-xs font-bold uppercase tracking-wider text-primary-600">Type Violations</div>
-            <p class="text-[11px] text-slate-500">Mathematically impossible schema errors</p>
+          <div class="metallic-glass rounded-3xl p-6 text-center space-y-1 metallic-card-hover">
+            <div class="text-3xl font-extrabold font-mono text-rose-600">0%</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-rose-700">Schema Errors</div>
+            <p class="text-[11px] text-slate-500">Mathematically typed outputs</p>
           </div>
-          <div class="glass-card rounded-3xl p-6 text-center space-y-1">
-            <div class="text-3xl font-extrabold font-mono text-slate-900">40x+</div>
-            <div class="text-xs font-bold uppercase tracking-wider text-primary-600">Speedup vs LLMs</div>
-            <p class="text-[11px] text-slate-500">Parallel non-autoregressive sampling</p>
+          <div class="metallic-glass rounded-3xl p-6 text-center space-y-1 metallic-card-hover">
+            <div class="text-3xl font-extrabold font-mono text-slate-900">$0.042</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-rose-700">Per 1M Input Tokens</div>
+            <p class="text-[11px] text-slate-500">100x cheaper than LLM inference</p>
           </div>
-          <div class="glass-card rounded-3xl p-6 text-center space-y-1">
+          <div class="metallic-glass rounded-3xl p-6 text-center space-y-1 metallic-card-hover">
             <div class="text-3xl font-extrabold font-mono text-emerald-600">FREE</div>
             <div class="text-xs font-bold uppercase tracking-wider text-emerald-700">Output Tokens</div>
-            <p class="text-[11px] text-slate-500">Too cheap to meter on System One</p>
+            <p class="text-[11px] text-slate-500">Outputs too cheap to meter</p>
           </div>
-        </div>
+        </section>
 
-        <!-- THE 3 PRIMITIVES -->
-        <div class="space-y-6">
-          <div class="text-center space-y-2">
-            <h2 class="text-2xl font-bold text-slate-900">System One Decision Primitives</h2>
-            <p class="text-sm text-slate-500">Composable building blocks that eliminate flaky prompt parsing.</p>
+        <section class="metallic-glass rounded-3xl p-8 space-y-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-rose-100 pb-5">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-rose-700 font-mono">Live Interactive Demo</span>
+              </div>
+              <h2 class="text-xl font-bold text-slate-900 tracking-tight mt-1">Parallel Non-Autoregressive Evaluation</h2>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-500">Sample Query:</span>
+              <button onclick="setLandingQuery('GDPR user deletion and invoice retention')" class="text-xs px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 font-medium">GDPR & Invoices</button>
+              <button onclick="setLandingQuery('Database connection pool timeout configuration')" class="text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 font-medium">Postgres Pool</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <div class="lg:col-span-1 space-y-3">
+              <label class="text-xs font-semibold text-slate-700">Test Query String:</label>
+              <input 
+                id="landing-query-input" 
+                type="text" 
+                value="How do we delete user data for GDPR compliance without breaking billing history?" 
+                class="w-full px-4 py-3 bg-white border border-rose-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-rose-400"
+              />
+              <button onclick="runLandingEvaluation()" id="landing-run-btn" class="w-full metallic-button py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2">
+                <span>Evaluate with Jev</span>
+                <span class="font-mono text-[10px] bg-white/20 px-1.5 py-0.5 rounded">78ms</span>
+              </button>
+              <p class="text-[11px] text-slate-500 leading-normal">
+                Jev evaluates multiple decision dimensions across candidates in parallel without generating tokens one by one.
+              </p>
+            </div>
+
+            <div class="lg:col-span-2 space-y-3 bg-white/70 p-5 rounded-2xl border border-rose-100">
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span class="text-slate-500 font-semibold uppercase">Candidate Document: doc_eng_01</span>
+                <span id="demo-confidence-badge" class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
+                  96% Calibrated Confidence
+                </span>
+              </div>
+              <h4 id="demo-doc-title" class="font-bold text-slate-900 text-sm">
+                User Data Deletion and Audit Ledger Runbook
+              </h4>
+
+              <div class="space-y-2 pt-2 text-xs">
+                <div>
+                  <div class="flex justify-between text-[11px] font-mono mb-1">
+                    <span class="text-slate-600 font-semibold">1. Primitive Score (Relevance)</span>
+                    <span id="demo-relevance-text" class="text-rose-700 font-bold">Direct Solution (0.96)</span>
+                  </div>
+                  <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div id="demo-relevance-bar" class="h-full metallic-bar-fill rounded-full" style="width: 96%"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-[11px] font-mono mb-1">
+                    <span class="text-slate-600 font-semibold">2. Primitive Choice (Routing)</span>
+                    <span id="demo-choice-text" class="text-slate-800 font-bold">Engineering SOP (0.91)</span>
+                  </div>
+                  <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div id="demo-choice-bar" class="h-full bg-rose-400 rounded-full" style="width: 91%"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-[11px] font-mono mb-1">
+                    <span class="text-slate-600 font-semibold">3. Primitive Noul (preserves_audit)</span>
+                    <span id="demo-noul-text" class="text-emerald-700 font-bold">True (0.95 probability)</span>
+                  </div>
+                  <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <div id="demo-noul-bar" class="h-full bg-emerald-500 rounded-full" style="width: 95%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-3 border-t border-rose-100 flex items-center justify-between text-xs">
+                <span class="text-slate-500">Synthesized Semantic Score:</span>
+                <span id="demo-final-score" class="font-mono text-base font-extrabold text-rose-600">96.8 / 100</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="space-y-8">
+          <div class="text-center space-y-2 max-w-xl mx-auto">
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Three Fast Primitives</h2>
+            <p class="text-xs sm:text-sm text-slate-500">Typed, common-sense decision functions designed to be called directly in code.</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="glass-card rounded-3xl p-6 space-y-3 border-pink-200/80">
-              <div class="w-10 h-10 rounded-2xl bg-pink-50 border border-pink-200 flex items-center justify-center text-primary-600">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="metallic-glass rounded-3xl p-7 space-y-4 metallic-card-hover">
+              <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="18" y1="20" x2="18" y2="10"></line>
                   <line x1="12" y1="20" x2="12" y2="4"></line>
                   <line x1="6" y1="20" x2="6" y2="14"></line>
                 </svg>
               </div>
-              <h3 class="font-bold text-slate-900 text-base">Score</h3>
+              <h3 class="font-bold text-slate-900 text-lg">Score</h3>
               <p class="text-xs text-slate-600 leading-relaxed">
-                Rates content against ordered descriptive levels (Irrelevant, Partial, Direct Solution). Returns chosen level, continuous distribution across all levels, and confidence.
+                Rates content against ordered descriptive levels (Irrelevant, Partial, Direct Solution). Returns level, full probability spectrum, and calibrated confidence.
               </p>
+              <div class="p-3 bg-rose-50/50 rounded-xl border border-rose-100 font-mono text-[11px] text-rose-900">
+                score(doc, query, levels) &rarr; Spectrum
+              </div>
             </div>
 
-            <div class="glass-card rounded-3xl p-6 space-y-3 border-pink-200/80">
-              <div class="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="metallic-glass rounded-3xl p-7 space-y-4 metallic-card-hover">
+              <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10"></circle>
                   <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
               </div>
-              <h3 class="font-bold text-slate-900 text-base">Choice</h3>
+              <h3 class="font-bold text-slate-900 text-lg">Choice</h3>
               <p class="text-xs text-slate-600 leading-relaxed">
-                Selects the best option from a predefined categorical set (Engineering SOP, Legal Policy, Billing Guide) with calibrated probabilities across all alternatives.
+                Classifies unstructured state into a closed category set (Engineering, Legal, Billing) accompanied by calibrated probabilities across all alternatives.
               </p>
+              <div class="p-3 bg-rose-50/50 rounded-xl border border-rose-100 font-mono text-[11px] text-rose-900">
+                choice(doc, categories) &rarr; Distribution
+              </div>
             </div>
 
-            <div class="glass-card rounded-3xl p-6 space-y-3 border-pink-200/80">
-              <div class="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="metallic-glass rounded-3xl p-7 space-y-4 metallic-card-hover">
+              <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                   <polyline points="22 4 12 14.01 9 11.01"></polyline>
                 </svg>
               </div>
-              <h3 class="font-bold text-slate-900 text-base">Noul</h3>
+              <h3 class="font-bold text-slate-900 text-lg">Noul</h3>
               <p class="text-xs text-slate-600 leading-relaxed">
-                A probabilistic boolean question. Evaluates whether a specific proposition is true and yields an honest probability float between 0.0 and 1.0.
+                A probabilistic boolean test. Evaluates whether a specific proposition is satisfied and returns an honest probability float between 0.0 and 1.0.
               </p>
+              <div class="p-3 bg-rose-50/50 rounded-xl border border-rose-100 font-mono text-[11px] text-rose-900">
+                noul(doc, "preserves_audit") &rarr; 0.95
+              </div>
             </div>
           </div>
-        </div>
+        </section>
+
+        <section class="metallic-glass rounded-3xl p-8 space-y-6">
+          <div class="space-y-1">
+            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Generative LLMs vs System One</h2>
+            <p class="text-xs text-slate-500">Comparing autoregressive chatbots with non-autoregressive decision models.</p>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="border-b border-rose-200/60 font-mono uppercase text-[11px] text-slate-500 bg-rose-50/30">
+                <tr>
+                  <th class="py-3 px-4">Evaluation Criterion</th>
+                  <th class="py-3 px-4 text-slate-400">Autoregressive LLM (GPT-4 / Claude)</th>
+                  <th class="py-3 px-4 text-rose-700 font-bold">TypeSafe Jev System One</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-rose-100/60">
+                <tr>
+                  <td class="py-3 px-4 font-semibold text-slate-800">Sampling Mechanism</td>
+                  <td class="py-3 px-4 text-slate-500">Token-by-token sequential loop</td>
+                  <td class="py-3 px-4 text-rose-700 font-semibold font-mono">Parallel speculative scoring</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-semibold text-slate-800">P50 Decision Latency</td>
+                  <td class="py-3 px-4 text-slate-500 font-mono">2,500ms - 6,000ms</td>
+                  <td class="py-3 px-4 text-emerald-600 font-bold font-mono">70ms - 95ms (40x faster)</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-semibold text-slate-800">Schema Error Rate</td>
+                  <td class="py-3 px-4 text-slate-500 font-mono">2% - 8% json parsing failures</td>
+                  <td class="py-3 px-4 text-emerald-600 font-bold font-mono">0% (Mathematically guaranteed)</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-semibold text-slate-800">Token Pricing</td>
+                  <td class="py-3 px-4 text-slate-500 font-mono">$5.00+ / 1M output tokens</td>
+                  <td class="py-3 px-4 text-emerald-600 font-bold font-mono">$0.042 / 1M in, outputs FREE</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-semibold text-slate-800">Calibration</td>
+                  <td class="py-3 px-4 text-slate-500">Severely overconfident</td>
+                  <td class="py-3 px-4 text-rose-700 font-semibold font-mono">RLCD Empirical alignment</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="rounded-3xl p-10 bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-rose-600/20">
+          <div class="space-y-2 text-center md:text-left">
+            <h3 class="text-2xl font-bold tracking-tight">Ready to test real queries?</h3>
+            <p class="text-xs text-rose-100 max-w-lg">
+              Open the Search Studio to run live queries against our seeded enterprise document corpus and observe parallel BM25 and Jev evaluations.
+            </p>
+          </div>
+          <button onclick="navigateTo('studio')" class="px-8 py-4 rounded-2xl bg-white text-rose-700 font-bold text-sm hover:bg-rose-50 transition-all shadow-md shrink-0">
+            Open Search Studio Now
+          </button>
+        </section>
 
       </div>
     </main>
 
-    <!-- ========================================================================= -->
-    <!-- PAGE 2: INTERACTIVE SEARCH & RE-RANKING STUDIO -->
-    <!-- ========================================================================= -->
-    <div id="page-studio" class="page-view hidden flex-1 flex overflow-hidden">
+    <div id="view-studio" class="page-view flex-1 overflow-hidden">
       
-      <!-- COLLAPSIBLE WORKSPACE SIDEBAR -->
-      <aside id="sidebar" class="w-64 border-r border-pink-100 bg-white/80 backdrop-blur-xl flex flex-col justify-between transition-all duration-300 z-30 shrink-0">
+      <aside id="sidebar" class="w-64 border-r border-rose-100 bg-white/90 backdrop-blur-xl flex flex-col justify-between transition-all duration-300 z-30 shrink-0">
         <div class="p-3.5 space-y-5">
           <div class="flex items-center justify-between px-2 pt-1">
             <span id="sidebar-label" class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              Workspace
+              Studio Workspace
             </span>
-            <button id="toggle-sidebar" class="p-1.5 rounded-xl hover:bg-pink-50 text-slate-400 hover:text-primary-600 transition-colors ml-auto">
-              <svg id="collapse-icon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <button id="toggle-sidebar" class="p-1.5 rounded-xl hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-colors ml-auto">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                 <line x1="9" y1="3" x2="9" y2="21"></line>
                 <path d="m14 9-3 3 3 3"></path>
@@ -293,15 +519,15 @@
           </div>
 
           <nav class="space-y-1.5">
-            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-50 to-rose-50 text-primary-600 font-semibold text-xs border border-pink-200 shadow-xs">
-              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl metallic-badge font-semibold text-xs shadow-xs">
+              <svg class="w-4 h-4 shrink-0 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
               <span class="nav-text">Re-ranking Studio</span>
             </a>
 
-            <button onclick="navigateTo('corpus')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-pink-50/60 hover:text-primary-600 font-medium text-xs transition-colors">
+            <button onclick="navigateTo('corpus')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-rose-50/60 hover:text-rose-700 font-medium text-xs transition-colors">
               <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
@@ -309,58 +535,57 @@
               <span class="nav-text">Document Corpus</span>
             </button>
 
-            <button onclick="navigateTo('evals')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-pink-50/60 hover:text-primary-600 font-medium text-xs transition-colors">
+            <button onclick="navigateTo('evals')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-slate-600 hover:bg-rose-50/60 hover:text-rose-700 font-medium text-xs transition-colors">
               <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="20" x2="12" y2="10"></line>
                 <line x1="18" y1="20" x2="18" y2="4"></line>
                 <line x1="6" y1="20" x2="6" y2="16"></line>
               </svg>
-              <span class="nav-text">Calibration Evals</span>
+              <span class="nav-text">RLCD Calibration</span>
             </button>
           </nav>
         </div>
 
-        <div id="sidebar-footer" class="p-4 m-3 rounded-2xl bg-gradient-to-b from-pink-50/50 to-pink-100/30 border border-pink-200/70 text-xs space-y-2">
+        <div id="sidebar-footer" class="p-4 m-3 rounded-2xl bg-rose-50/50 border border-rose-200/80 text-xs space-y-2">
           <div class="flex items-center justify-between font-semibold text-slate-700">
-            <span>Corpus Index</span>
-            <span class="font-mono text-primary-600 font-bold">7 docs</span>
+            <span>Corpus Status</span>
+            <span class="font-mono text-rose-700 font-bold">7 documents</span>
           </div>
           <div class="text-[11px] text-slate-500 flex justify-between">
             <span>Stage 1 Index:</span>
             <span class="font-mono text-slate-700">SQLite FTS5</span>
           </div>
           <div class="text-[11px] text-slate-500 flex justify-between">
-            <span>Jev Sampling:</span>
-            <span class="font-mono text-emerald-600 font-semibold">Parallel</span>
+            <span>Stage 2 Model:</span>
+            <span class="font-mono text-emerald-600 font-bold">Jev Parallel</span>
           </div>
         </div>
       </aside>
 
-      <!-- MAIN STUDIO AREA -->
       <main class="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
 
-        <!-- SEARCH INPUT -->
-        <section class="glass-card rounded-3xl p-6 pink-focus-ring border border-pink-200 space-y-4">
+        <section class="metallic-glass rounded-3xl p-6 space-y-4">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary-600">
-              <svg class="w-4 h-4 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-700">
+              <svg class="w-4 h-4 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
               </svg>
-              <span>Query Console (Speculative Parallel Fan-Out)</span>
+              <span>Query Console (Stage 1 BM25 Recall &rarr; Stage 2 Jev Scoring)</span>
             </div>
-            <span class="text-[11px] font-mono text-slate-400">Target Model: jev-latest</span>
+            <span class="text-[11px] font-mono text-slate-400">Target Model: TypeSafe Jev System One</span>
           </div>
 
           <div class="relative flex items-center">
             <input 
-              id="search-input"
+              id="studio-search-input"
               type="text" 
               value="How do we delete user data for GDPR compliance without breaking billing history?"
-              class="w-full pl-5 pr-36 py-4 bg-white/95 border border-pink-200 rounded-2xl text-slate-900 text-sm font-medium focus:outline-none shadow-xs transition-all placeholder:text-slate-400"
+              class="w-full pl-5 pr-36 py-4 bg-white/95 border border-rose-200 rounded-2xl text-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-rose-400 shadow-xs placeholder:text-slate-400"
             />
             <button 
-              id="execute-btn"
-              class="absolute right-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-rose-400 hover:from-primary-600 hover:to-rose-500 text-white rounded-xl text-xs font-semibold transition-all shadow-sm shadow-primary-500/20 flex items-center gap-2"
+              id="studio-execute-btn"
+              onclick="executeStudioSearch()"
+              class="metallic-button absolute right-2 px-5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2"
             >
               <span>Re-rank</span>
               <span class="font-mono text-[11px] bg-white/20 px-1.5 py-0.5 rounded">84ms</span>
@@ -369,76 +594,67 @@
 
           <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 pt-1">
             <div class="flex items-center gap-3">
-              <span class="font-medium text-slate-700">Filter Scope:</span>
+              <span class="font-medium text-slate-700">Department Filter:</span>
               <div class="flex items-center gap-1.5">
-                <button class="px-2.5 py-1 rounded-lg bg-pink-50 text-primary-600 border border-primary-200 font-semibold text-[11px]">
-                  All Departments
-                </button>
-                <button class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-[11px]">
-                  Engineering
-                </button>
-                <button class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-[11px]">
-                  Legal
-                </button>
-                <button class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-[11px]">
-                  Finance
-                </button>
+                <button class="px-2.5 py-1 rounded-lg metallic-badge font-semibold text-[11px]">All</button>
+                <button class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-[11px]">Engineering</button>
+                <button class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-[11px]">Legal</button>
+                <button class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 text-[11px]">Finance</button>
               </div>
             </div>
 
             <div class="flex items-center gap-2 font-mono text-[11px]">
-              <span class="text-slate-500">Min Confidence Threshold:</span>
-              <span class="px-2 py-0.5 rounded-md bg-white border border-pink-200 text-primary-600 font-bold">85%</span>
+              <span class="text-slate-500">Preset Queries:</span>
+              <button onclick="setStudioQuery('How do we delete user data for GDPR compliance without breaking billing history?')" class="text-rose-600 underline font-sans text-xs">GDPR & Invoices</button>
+              <span class="text-slate-300">|</span>
+              <button onclick="setStudioQuery('Postgres connection pool exhaustion timeout settings')" class="text-rose-600 underline font-sans text-xs">Pool Exhaustion</button>
             </div>
           </div>
         </section>
 
-        <!-- LIVE METRICS RIBBON -->
         <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="glass-card rounded-2xl p-4.5 space-y-1">
+          <div class="metallic-glass rounded-2xl p-4.5 space-y-1">
             <div class="text-slate-400 text-xs font-medium uppercase tracking-wider">Stage 1 (BM25 FTS)</div>
             <div class="text-2xl font-bold font-mono text-slate-900 tracking-tight">11.4 ms</div>
-            <div class="text-[11px] text-slate-500">Fast lexical candidate recall</div>
+            <div class="text-[11px] text-slate-500">Lexical candidate recall</div>
           </div>
 
-          <div class="glass-card rounded-2xl p-4.5 space-y-1 border-primary-300 bg-pink-50/25">
-            <div class="text-primary-600 text-xs font-bold uppercase tracking-wider">Stage 2 (Jev Parallel)</div>
-            <div class="text-2xl font-bold font-mono text-primary-600 tracking-tight">72.8 ms</div>
-            <div class="text-[11px] text-primary-500">3 primitives evaluated in parallel</div>
+          <div class="metallic-glass rounded-2xl p-4.5 space-y-1 border-rose-300 bg-rose-50/20">
+            <div class="text-rose-700 text-xs font-bold uppercase tracking-wider">Stage 2 (Jev Parallel)</div>
+            <div class="text-2xl font-bold font-mono text-rose-600 tracking-tight">72.8 ms</div>
+            <div class="text-[11px] text-rose-600">3 primitives evaluated in parallel</div>
           </div>
 
-          <div class="glass-card rounded-2xl p-4.5 space-y-1">
+          <div class="metallic-glass rounded-2xl p-4.5 space-y-1">
             <div class="text-slate-400 text-xs font-medium uppercase tracking-wider">Total End-to-End</div>
             <div class="text-2xl font-bold font-mono text-slate-900 tracking-tight">84.2 ms</div>
-            <div class="text-[11px] text-slate-500">Real-time UX guarantee</div>
+            <div class="text-[11px] text-slate-500">Real-time keystroke guarantee</div>
           </div>
 
-          <div class="glass-card rounded-2xl p-4.5 space-y-1">
-            <div class="text-slate-400 text-xs font-medium uppercase tracking-wider">Unit Token Cost</div>
+          <div class="metallic-glass rounded-2xl p-4.5 space-y-1">
+            <div class="text-slate-400 text-xs font-medium uppercase tracking-wider">Query Token Cost</div>
             <div class="text-2xl font-bold font-mono text-emerald-600 tracking-tight">$0.000028</div>
-            <div class="text-[11px] text-slate-500">Output tokens are free</div>
+            <div class="text-[11px] text-slate-500">Outputs are completely free</div>
           </div>
         </section>
 
-        <!-- DUAL COLUMN COMPARISON -->
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-          <!-- LEXICAL BM25 (BASELINE) -->
           <div class="space-y-4">
-            <div class="flex items-center justify-between px-1 pb-1 border-b border-pink-100">
+            <div class="flex items-center justify-between px-1 pb-1 border-b border-rose-100">
               <span class="text-xs font-bold uppercase tracking-wider text-slate-500">
-                Baseline: Lexical Search (BM25)
+                Baseline: Stage 1 Lexical Search (BM25)
               </span>
               <span class="text-[11px] font-medium text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">
-                Term Frequency Match
+                Keyword Matching
               </span>
             </div>
 
             <div class="space-y-3">
-              <div class="glass-card rounded-2xl p-5 space-y-2 border-slate-200">
+              <div class="metallic-glass rounded-2xl p-5 space-y-2 border-slate-200">
                 <div class="flex items-start justify-between gap-2">
                   <div>
-                    <span class="text-[11px] font-mono font-medium text-slate-400">#1 (Lexical Frequency)</span>
+                    <span class="text-[11px] font-mono font-medium text-slate-400">#1 (BM25 Recall)</span>
                     <h4 class="font-semibold text-slate-900 text-sm">General Data Protection Regulation Compliance Policy</h4>
                   </div>
                   <span class="font-mono text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium shrink-0">
@@ -446,165 +662,173 @@
                   </span>
                 </div>
                 <p class="text-xs text-slate-600 leading-relaxed">
-                  "Under Article seventeen, data subjects have the right to obtain erasure of personal data without undue delay. The controller must erase personal data..."
+                  All systems processing user data must comply with EU GDPR principles. Outlines high-level statutory requirements without operational details on ledger preserving.
                 </p>
-                <div class="flex items-center gap-2 pt-1 text-[11px] text-slate-500 font-mono">
-                  <span>Matched terms: gdpr, erasure</span>
-                  <span>•</span>
-                  <span>Department: Legal</span>
+                <div class="pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-100">
+                  <span class="font-mono">doc_legal_01</span>
+                  <span class="text-rose-600 font-medium">Lacks technical runbook solution</span>
                 </div>
               </div>
 
-              <div class="glass-card rounded-2xl p-5 space-y-2 border-slate-200">
+              <div class="metallic-glass rounded-2xl p-5 space-y-2 border-slate-200">
                 <div class="flex items-start justify-between gap-2">
                   <div>
-                    <span class="text-[11px] font-mono font-medium text-slate-400">#2 (Lexical Frequency)</span>
+                    <span class="text-[11px] font-mono font-medium text-slate-400">#2 (BM25 Recall)</span>
                     <h4 class="font-semibold text-slate-900 text-sm">Customer Billing History and Invoice Retention Requirements</h4>
                   </div>
                   <span class="font-mono text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium shrink-0">
-                    BM25: 14.10
+                    BM25: 14.85
                   </span>
                 </div>
                 <p class="text-xs text-slate-600 leading-relaxed">
-                  "All customer invoices and transaction records must be archived for seven calendar years to satisfy international financial reporting..."
+                  Financial tax regulations mandate storing completed invoices and payment ledger records for seven fiscal years, regardless of account deletion requests.
                 </p>
-                <div class="flex items-center gap-2 pt-1 text-[11px] text-slate-500 font-mono">
-                  <span>Matched terms: billing, history</span>
-                  <span>•</span>
-                  <span>Department: Finance</span>
+                <div class="pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-100">
+                  <span class="font-mono">doc_finance_01</span>
+                  <span class="text-slate-500">Identifies requirement only</span>
+                </div>
+              </div>
+
+              <div class="metallic-glass rounded-2xl p-5 space-y-2 border-slate-200 opacity-75">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <span class="text-[11px] font-mono font-medium text-slate-400">#3 (BM25 Recall)</span>
+                    <h4 class="font-semibold text-slate-900 text-sm">User Data Deletion and Audit Ledger Runbook</h4>
+                  </div>
+                  <span class="font-mono text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium shrink-0">
+                    BM25: 8.65
+                  </span>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Contains operational steps: anonymize user profile, retain immutable cryptographic audit trail for billing records.
+                </p>
+                <div class="pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-100">
+                  <span class="font-mono">doc_eng_01</span>
+                  <span class="text-amber-600 font-medium">Ranked #3 by keywords alone</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- JEV CALIBRATED RE-RANKED -->
           <div class="space-y-4">
-            <div class="flex items-center justify-between px-1 pb-1 border-b border-pink-200">
-              <span class="text-xs font-bold uppercase tracking-wider text-primary-600">
-                Stage 2: Jev Calibrated Re-rank
+            <div class="flex items-center justify-between px-1 pb-1 border-b border-rose-200">
+              <span class="text-xs font-bold uppercase tracking-wider text-rose-700">
+                Stage 2: TypeSafe Jev Semantic Re-ranking
               </span>
-              <span class="text-[11px] font-semibold text-primary-600 bg-primary-50 px-2.5 py-0.5 rounded-full border border-primary-200">
-                System One Intelligence
+              <span class="text-[11px] font-semibold metallic-badge px-2.5 py-0.5 rounded-full font-mono">
+                3 Primitives Evaluated
               </span>
             </div>
 
             <div class="space-y-3">
-              <!-- TOP PICK -->
-              <div class="glass-card rounded-2xl p-5 space-y-3 border-primary-300 bg-gradient-to-b from-white to-pink-50/30 shadow-md shadow-primary-500/10">
-                <div class="flex items-start justify-between gap-3">
-                  <div class="space-y-1">
+              <div class="metallic-glass rounded-2xl p-5 space-y-3 border-rose-300 ring-1 ring-rose-200/80 shadow-md">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
                     <div class="flex items-center gap-2">
-                      <span class="text-xs font-mono font-bold text-primary-600">#1 (Jev Top Pick)</span>
-                      <span class="text-[11px] px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
-                        Direct Solution
-                      </span>
-                      <span class="text-[11px] px-2 py-0.5 rounded-md bg-pink-50 text-primary-600 font-medium border border-primary-200">
-                        Engineering
+                      <span class="text-[11px] font-mono font-bold text-rose-600">#1 Top Decision</span>
+                      <span class="text-[10px] font-mono bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-bold border border-emerald-200">
+                        +2 Ranks Promoted
                       </span>
                     </div>
-                    <h4 class="font-bold text-slate-900 text-sm">User Data Deletion and Audit Ledger Runbook</h4>
+                    <h4 class="font-bold text-slate-900 text-sm mt-0.5">
+                      User Data Deletion and Audit Ledger Runbook
+                    </h4>
                   </div>
-
                   <div class="text-right shrink-0">
-                    <div class="text-lg font-bold font-mono text-primary-600">96.8 <span class="text-xs text-slate-400 font-normal">/ 100</span></div>
-                    <div class="text-[10px] font-mono text-emerald-600 font-medium">Confidence: 98%</div>
+                    <span class="font-mono text-sm font-extrabold text-rose-600">96.8</span>
+                    <span class="text-[10px] font-mono text-slate-400 block">/ 100</span>
                   </div>
                 </div>
 
-                <p class="text-xs text-slate-700 leading-relaxed">
-                  "When processing GDPR right to erasure requests, delete all personally identifiable data from authentication records. Financial records including invoice line items, tax statements, and transaction logs must be retained in an anonymized ledger..."
+                <p class="text-xs text-slate-600 leading-relaxed">
+                  Operational engineering steps to delete PII from primary stores while keeping cryptographic audit ledger intact for tax compliance.
                 </p>
 
-                <div class="grid grid-cols-2 gap-2 pt-2 border-t border-pink-100 text-xs">
-                  <div class="flex items-center justify-between bg-white/80 p-2 rounded-xl border border-pink-100">
-                    <span class="text-slate-500 text-[11px]">Direct Answer Prob:</span>
-                    <span class="font-mono text-primary-600 font-bold">0.96 (96%)</span>
+                <div class="space-y-2 pt-1 border-t border-rose-100 text-xs">
+                  <div>
+                    <div class="flex justify-between text-[11px] font-mono mb-0.5">
+                      <span class="text-slate-500">Primitive Score (Relevance)</span>
+                      <span class="text-rose-700 font-bold">Direct Solution (0.96)</span>
+                    </div>
+                    <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div class="h-full metallic-bar-fill rounded-full" style="width: 96%"></div>
+                    </div>
                   </div>
-                  <div class="flex items-center justify-between bg-white/80 p-2 rounded-xl border border-pink-100">
-                    <span class="text-slate-500 text-[11px]">Preserves Invoices:</span>
-                    <span class="font-mono text-emerald-600 font-bold">0.95 (YES)</span>
+
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-slate-500">Primitive Choice:</span>
+                    <span class="font-mono font-semibold text-slate-800">Engineering SOP (0.91)</span>
+                  </div>
+
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-slate-500">Primitive Noul (preserves_audit):</span>
+                    <span class="font-mono font-bold text-emerald-600">True (0.95 prob)</span>
                   </div>
                 </div>
 
-                <div class="pt-1 flex items-center justify-between">
-                  <span class="text-[11px] text-slate-400 font-mono">ID: doc_eng_01</span>
-                  <button 
-                    onclick="openInspector('doc_eng_01', 'User Data Deletion and Audit Ledger Runbook', 96.8, 0.98, 'Direct Solution', 0.96, 0.95, 'engineering_runbook')"
-                    class="px-3 py-1.5 text-xs rounded-xl bg-white hover:bg-pink-50 text-primary-600 border border-pink-200 font-semibold transition-all shadow-2xs hover:shadow-xs flex items-center gap-1.5"
-                  >
-                    <span>Inspect Probabilities</span>
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <div class="pt-2 flex items-center justify-between">
+                  <span class="font-mono text-[11px] text-slate-400">doc_eng_01</span>
+                  <button onclick="openInspector('doc_eng_01', 'User Data Deletion and Audit Ledger Runbook', 96.8, 0.96, 'Direct Solution', 0.96, 0.95, 'Engineering SOP')" class="text-xs font-semibold text-rose-600 hover:text-rose-800 flex items-center gap-1">
+                    <span>Inspect Decision</span>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                   </button>
                 </div>
               </div>
 
-              <!-- SECOND PICK -->
-              <div class="glass-card rounded-2xl p-5 space-y-3 border-pink-100">
-                <div class="flex items-start justify-between gap-3">
-                  <div class="space-y-1">
+              <div class="metallic-glass rounded-2xl p-5 space-y-3">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
                     <div class="flex items-center gap-2">
-                      <span class="text-xs font-mono font-medium text-slate-500">#2 (Jev Rank)</span>
-                      <span class="text-[11px] px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-medium border border-blue-200">
-                        Partial Mention
-                      </span>
-                      <span class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
-                        Legal
+                      <span class="text-[11px] font-mono font-medium text-slate-500">#2</span>
+                      <span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
+                        -1 Rank Demoted
                       </span>
                     </div>
-                    <h4 class="font-semibold text-slate-800 text-sm">General Data Protection Regulation Compliance Policy</h4>
+                    <h4 class="font-semibold text-slate-900 text-sm mt-0.5">
+                      General Data Protection Regulation Compliance Policy
+                    </h4>
                   </div>
-
                   <div class="text-right shrink-0">
-                    <div class="text-base font-bold font-mono text-slate-700">64.2 <span class="text-xs text-slate-400 font-normal">/ 100</span></div>
-                    <div class="text-[10px] font-mono text-slate-400">Confidence: 91%</div>
+                    <span class="font-mono text-sm font-bold text-slate-700">62.4</span>
+                    <span class="text-[10px] font-mono text-slate-400 block">/ 100</span>
                   </div>
                 </div>
 
                 <p class="text-xs text-slate-600 leading-relaxed">
-                  "Under Article seventeen, data subjects have the right to obtain erasure of personal data without undue delay. The controller must erase personal data where the data is no longer necessary..."
+                  High-level policy defining GDPR rights. Identified by Jev as Partial Relevance because it lacks actionable ledger retention steps.
                 </p>
 
-                <div class="pt-1 flex items-center justify-between">
-                  <span class="text-[11px] text-slate-400 font-mono">ID: doc_legal_01</span>
-                  <button 
-                    onclick="openInspector('doc_legal_01', 'GDPR Compliance Policy', 64.2, 0.91, 'Partial Mention', 0.45, 0.04, 'legal_policy')"
-                    class="px-3 py-1.5 text-xs rounded-xl bg-white hover:bg-pink-50 text-slate-600 border border-pink-200 font-medium transition-all shadow-2xs hover:shadow-xs flex items-center gap-1.5"
-                  >
-                    <span>Inspect Probs</span>
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <div class="pt-2 flex items-center justify-between text-xs">
+                  <span class="font-mono text-[11px] text-slate-400">doc_legal_01</span>
+                  <button onclick="openInspector('doc_legal_01', 'General Data Protection Regulation Compliance Policy', 62.4, 0.72, 'Partial Relevance', 0.35, 0.40, 'Legal Policy')" class="text-xs font-semibold text-slate-600 hover:text-rose-600 flex items-center gap-1">
+                    <span>Inspect Decision</span>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                   </button>
                 </div>
               </div>
             </div>
           </div>
-
         </section>
 
       </main>
-
     </div>
 
-    <!-- ========================================================================= -->
-    <!-- PAGE 3: DOCUMENT CORPUS TABLE -->
-    <!-- ========================================================================= -->
-    <main id="page-corpus" class="page-view hidden flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
-      <div class="max-w-6xl mx-auto space-y-6">
+    <div id="view-corpus" class="page-view flex-1 flex-col p-6 md:p-8 space-y-6 overflow-y-auto">
+      <div class="max-w-6xl mx-auto space-y-6 w-full">
         
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Indexed Document Corpus</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Enterprise repositories synchronized in local SQLite FTS5 store.</p>
+            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Enterprise Document Corpus</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Documents synchronized in local SQLite FTS5 table and evaluated by Jev.</p>
           </div>
 
           <div class="flex items-center gap-2">
-            <button class="px-4 py-2 rounded-xl bg-primary-500 hover:bg-primary-600 text-white font-medium text-xs shadow-xs transition-colors flex items-center gap-2">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <button onclick="alert('Document upload drawer activated')" class="metallic-button px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
@@ -613,9 +837,9 @@
           </div>
         </div>
 
-        <div class="glass-card rounded-3xl overflow-hidden border border-pink-200">
+        <div class="metallic-glass rounded-3xl overflow-hidden">
           <table class="w-full text-left text-xs">
-            <thead class="bg-pink-50/50 border-b border-pink-100 text-slate-500 font-mono uppercase text-[11px]">
+            <thead class="bg-rose-50/50 border-b border-rose-100 text-slate-500 font-mono uppercase text-[11px]">
               <tr>
                 <th class="py-3.5 px-5">Document ID</th>
                 <th class="py-3.5 px-5">Title</th>
@@ -624,123 +848,138 @@
                 <th class="py-3.5 px-5">Status</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-pink-100/60 text-slate-700">
-              <tr class="hover:bg-pink-50/30 transition-colors">
+            <tbody class="divide-y divide-rose-100/60 text-slate-700">
+              <tr class="hover:bg-rose-50/30 transition-colors">
                 <td class="py-3.5 px-5 font-mono text-slate-500">doc_eng_01</td>
                 <td class="py-3.5 px-5 font-semibold text-slate-900">User Data Deletion and Audit Ledger Runbook</td>
-                <td class="py-3.5 px-5"><span class="px-2 py-0.5 rounded-md bg-pink-50 text-primary-600 font-medium">Engineering</span></td>
+                <td class="py-3.5 px-5"><span class="px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 font-medium">Engineering</span></td>
                 <td class="py-3.5 px-5 font-mono">342</td>
-                <td class="py-3.5 px-5 text-emerald-600 font-medium">Indexed</td>
+                <td class="py-3.5 px-5 text-emerald-600 font-medium">Indexed (FTS5)</td>
               </tr>
-              <tr class="hover:bg-pink-50/30 transition-colors">
+              <tr class="hover:bg-rose-50/30 transition-colors">
                 <td class="py-3.5 px-5 font-mono text-slate-500">doc_eng_02</td>
                 <td class="py-3.5 px-5 font-semibold text-slate-900">PostgreSQL Database Connection Pooling Guide</td>
-                <td class="py-3.5 px-5"><span class="px-2 py-0.5 rounded-md bg-pink-50 text-primary-600 font-medium">Engineering</span></td>
+                <td class="py-3.5 px-5"><span class="px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 font-medium">Engineering</span></td>
                 <td class="py-3.5 px-5 font-mono">298</td>
-                <td class="py-3.5 px-5 text-emerald-600 font-medium">Indexed</td>
+                <td class="py-3.5 px-5 text-emerald-600 font-medium">Indexed (FTS5)</td>
               </tr>
-              <tr class="hover:bg-pink-50/30 transition-colors">
+              <tr class="hover:bg-rose-50/30 transition-colors">
                 <td class="py-3.5 px-5 font-mono text-slate-500">doc_legal_01</td>
                 <td class="py-3.5 px-5 font-semibold text-slate-900">General Data Protection Regulation Compliance Policy</td>
                 <td class="py-3.5 px-5"><span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium">Legal</span></td>
                 <td class="py-3.5 px-5 font-mono">312</td>
-                <td class="py-3.5 px-5 text-emerald-600 font-medium">Indexed</td>
+                <td class="py-3.5 px-5 text-emerald-600 font-medium">Indexed (FTS5)</td>
               </tr>
-              <tr class="hover:bg-pink-50/30 transition-colors">
+              <tr class="hover:bg-rose-50/30 transition-colors">
                 <td class="py-3.5 px-5 font-mono text-slate-500">doc_finance_01</td>
                 <td class="py-3.5 px-5 font-semibold text-slate-900">Customer Billing History and Invoice Retention Requirements</td>
-                <td class="py-3.5 px-5"><span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-medium">Finance</span></td>
+                <td class="py-3.5 px-5"><span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 font-medium">Finance</span></td>
                 <td class="py-3.5 px-5 font-mono">275</td>
-                <td class="py-3.5 px-5 text-emerald-600 font-medium">Indexed</td>
+                <td class="py-3.5 px-5 text-emerald-600 font-medium">Indexed (FTS5)</td>
+              </tr>
+              <tr class="hover:bg-rose-50/30 transition-colors">
+                <td class="py-3.5 px-5 font-mono text-slate-500">doc_eng_03</td>
+                <td class="py-3.5 px-5 font-semibold text-slate-900">Distributed Cache Invalidation and Event Sourcing</td>
+                <td class="py-3.5 px-5"><span class="px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 font-medium">Engineering</span></td>
+                <td class="py-3.5 px-5 font-mono">380</td>
+                <td class="py-3.5 px-5 text-emerald-600 font-medium">Indexed (FTS5)</td>
               </tr>
             </tbody>
           </table>
         </div>
 
       </div>
-    </main>
+    </div>
 
-    <!-- ========================================================================= -->
-    <!-- PAGE 4: SYSTEM ONE CALIBRATION & EVALS -->
-    <!-- ========================================================================= -->
-    <main id="page-evals" class="page-view hidden flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
-      <div class="max-w-6xl mx-auto space-y-6">
+    <div id="view-evals" class="page-view flex-1 flex-col p-6 md:p-8 space-y-6 overflow-y-auto">
+      <div class="max-w-6xl mx-auto space-y-6 w-full">
+        
         <div>
           <h2 class="text-2xl font-bold text-slate-900 tracking-tight">RLCD Calibration Analytics</h2>
-          <p class="text-xs text-slate-500 mt-0.5">Statistical evaluation of Jev System One calibrated confidence against empirical accuracy.</p>
+          <p class="text-xs text-slate-500 mt-0.5">Statistical verification of Jev System One reported confidence vs empirical test accuracy.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="glass-card rounded-3xl p-6 space-y-4">
-            <h3 class="font-bold text-slate-900 text-sm">Confidence vs Empirical Accuracy</h3>
+          <div class="metallic-glass rounded-3xl p-6 space-y-4">
+            <h3 class="font-bold text-slate-900 text-sm">Confidence vs True Accuracy</h3>
             <p class="text-xs text-slate-500 leading-relaxed">
-              Unlike traditional LLMs which are overconfident, RLCD ensures that a reported 90% confidence matches true 90% correctness across queries.
+              Unlike traditional LLMs which exhibit severe overconfidence, RLCD (Reinforcement Learning for Calibrated Decisions) forces a 90% confidence score to accurately mean 90% empirical precision.
             </p>
-            <div class="space-y-2 pt-2">
-              <div class="flex justify-between text-xs font-mono">
-                <span>90% - 100% Bucket:</span>
-                <span class="text-emerald-600 font-bold">98.2% Accurate</span>
-              </div>
-              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div class="h-full bg-emerald-500 rounded-full w-[98%]"></div>
-              </div>
-
-              <div class="flex justify-between text-xs font-mono pt-1">
-                <span>70% - 90% Bucket:</span>
-                <span class="text-primary-600 font-bold">81.4% Accurate</span>
-              </div>
-              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div class="h-full bar-gradient rounded-full w-[81%]"></div>
+            <div class="space-y-3 pt-2">
+              <div>
+                <div class="flex justify-between text-xs font-mono mb-1">
+                  <span>90% - 100% Confidence Bracket:</span>
+                  <span class="text-emerald-600 font-bold">98.2% Accuracy</span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-emerald-500 rounded-full" style="width: 98.2%"></div>
+                </div>
               </div>
 
-              <div class="flex justify-between text-xs font-mono pt-1">
-                <span>Under 70% (Escalate to Human):</span>
-                <span class="text-amber-600 font-bold">58.0% Accurate</span>
+              <div>
+                <div class="flex justify-between text-xs font-mono mb-1">
+                  <span>70% - 90% Confidence Bracket:</span>
+                  <span class="text-rose-600 font-bold">81.4% Accuracy</span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full metallic-bar-fill rounded-full" style="width: 81.4%"></div>
+                </div>
               </div>
-              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div class="h-full bg-amber-400 rounded-full w-[58%]"></div>
+
+              <div>
+                <div class="flex justify-between text-xs font-mono mb-1">
+                  <span>Under 70% (Escalate to Human):</span>
+                  <span class="text-amber-600 font-bold">58.0% Accuracy</span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-amber-400 rounded-full" style="width: 58%"></div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="glass-card rounded-3xl p-6 space-y-4">
+          <div class="metallic-glass rounded-3xl p-6 space-y-4">
             <h3 class="font-bold text-slate-900 text-sm">Decision Latency Distribution</h3>
             <p class="text-xs text-slate-500 leading-relaxed">
-              Non-autoregressive parallel sampling produces stable response times regardless of query length.
+              Non-autoregressive parallel sampling produces stable latency distributions independent of sequence length.
             </p>
             <div class="grid grid-cols-3 gap-3 pt-4 text-center">
-              <div class="p-3 bg-white rounded-2xl border border-pink-100">
+              <div class="p-4 bg-white/80 rounded-2xl border border-rose-100">
                 <div class="text-[11px] font-mono text-slate-400 uppercase">p50</div>
-                <div class="text-xl font-bold font-mono text-slate-800">72ms</div>
+                <div class="text-2xl font-bold font-mono text-slate-800">72ms</div>
+                <div class="text-[10px] text-slate-400 mt-1">Keystroke fast</div>
               </div>
-              <div class="p-3 bg-white rounded-2xl border border-pink-100">
+              <div class="p-4 bg-white/80 rounded-2xl border border-rose-100">
                 <div class="text-[11px] font-mono text-slate-400 uppercase">p95</div>
-                <div class="text-xl font-bold font-mono text-primary-600">88ms</div>
+                <div class="text-2xl font-bold font-mono text-rose-600">88ms</div>
+                <div class="text-[10px] text-slate-400 mt-1">SLA guarantee</div>
               </div>
-              <div class="p-3 bg-white rounded-2xl border border-pink-100">
+              <div class="p-4 bg-white/80 rounded-2xl border border-rose-100">
                 <div class="text-[11px] font-mono text-slate-400 uppercase">p99</div>
-                <div class="text-xl font-bold font-mono text-slate-800">114ms</div>
+                <div class="text-2xl font-bold font-mono text-slate-800">105ms</div>
+                <div class="text-[10px] text-slate-400 mt-1">Tail latency</div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
-    </main>
+    </div>
 
   </div>
 
-  <!-- SLIDE-OVER INSPECTOR DRAWER -->
-  <div id="inspector-drawer" class="fixed inset-y-0 right-0 w-full sm:w-[500px] bg-white/95 backdrop-blur-2xl shadow-2xl border-l border-pink-200 p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-out z-50">
-    <div class="space-y-6 overflow-y-auto pr-1">
-      
-      <div class="flex items-start justify-between pb-4 border-b border-pink-100">
-        <div class="space-y-1">
-          <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-primary-600 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-200">
-            System One Decision Receipt
+  <div id="inspector-drawer" class="fixed inset-y-0 right-0 w-full sm:w-[480px] bg-white/95 backdrop-blur-2xl border-l border-rose-200 shadow-2xl p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+    <div class="space-y-6 overflow-y-auto">
+      <div class="flex items-center justify-between pb-4 border-b border-rose-100">
+        <div>
+          <span class="text-[11px] font-mono font-bold text-rose-600 uppercase tracking-wider">
+            Decision Audit Inspector
           </span>
-          <h3 id="modal-title" class="font-bold text-slate-900 text-base leading-snug">Document Decision Inspector</h3>
+          <h3 id="modal-title" class="font-bold text-slate-900 text-base mt-0.5">
+            Document Title
+          </h3>
         </div>
-        <button id="close-inspector" class="p-1.5 rounded-xl hover:bg-pink-50 text-slate-400 hover:text-slate-700 transition-colors">
+        <button id="close-inspector" class="p-1.5 rounded-xl hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-colors">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -748,75 +987,41 @@
         </button>
       </div>
 
-      <div class="p-3.5 bg-gradient-to-r from-pink-50/60 to-rose-50/40 rounded-2xl border border-pink-200 text-xs space-y-1.5">
-        <div class="flex justify-between">
-          <span class="text-slate-500">Evaluated Model:</span>
-          <span class="font-mono text-primary-600 font-bold">jev-latest</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500">Sampling Mode:</span>
-          <span class="font-mono text-slate-800">Parallel Forward Pass</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500">Calibrated Certainty:</span>
-          <span id="modal-confidence" class="font-mono text-emerald-600 font-bold">98% Confident</span>
-        </div>
-      </div>
-
-      <div class="space-y-4 text-xs">
-        <div class="space-y-2.5 border border-pink-100 rounded-2xl p-4 bg-white shadow-2xs">
+      <div class="space-y-4">
+        <div class="space-y-2 border border-rose-100 rounded-2xl p-4 bg-white">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-slate-800 text-xs uppercase tracking-wide">1. PRIMITIVE: Score (relevance)</span>
-            <span id="modal-rubric" class="font-mono text-primary-600 font-semibold bg-pink-50 px-2.5 py-0.5 rounded-md border border-pink-200">
-              Direct Solution
+            <span class="font-bold text-slate-800 text-xs uppercase tracking-wide">1. PRIMITIVE: Score (Relevance)</span>
+            <span id="modal-confidence" class="font-mono text-xs text-rose-700 font-bold bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+              96% Confident
             </span>
           </div>
-          <div class="space-y-1.5 pt-1">
-            <div class="flex justify-between text-[11px]">
-              <span class="text-slate-600">Level 2 (Direct Solution):</span>
-              <span class="font-mono font-bold text-primary-600">0.94 (94%)</span>
-            </div>
-            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div class="h-full bar-gradient w-[94%] rounded-full"></div>
-            </div>
-
-            <div class="flex justify-between text-[11px] pt-1.5">
-              <span class="text-slate-500">Level 1 (Partial Mention):</span>
-              <span class="font-mono text-slate-600">0.05 (5%)</span>
-            </div>
-            <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-              <div class="h-full bg-slate-300 w-[5%] rounded-full"></div>
-            </div>
+          <div class="flex items-center justify-between text-xs pt-1">
+            <span class="text-slate-500">Selected Level:</span>
+            <span id="modal-rubric" class="font-semibold text-slate-900">Direct Solution</span>
           </div>
         </div>
 
-        <div class="space-y-2 border border-pink-100 rounded-2xl p-4 bg-white shadow-2xs">
+        <div class="space-y-2 border border-rose-100 rounded-2xl p-4 bg-white">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-slate-800 text-xs uppercase tracking-wide">2. PRIMITIVE: Choice (domain)</span>
-            <span id="modal-category" class="font-mono text-indigo-600 font-semibold bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
-              engineering_runbook
+            <span class="font-bold text-slate-800 text-xs uppercase tracking-wide">2. PRIMITIVE: Choice (Category)</span>
+            <span id="modal-category" class="font-mono text-xs text-slate-700 font-bold bg-slate-100 px-2 py-0.5 rounded-md">
+              Engineering SOP
             </span>
           </div>
-          <p class="text-[11px] text-slate-500">
-            Categorized as <strong class="text-slate-800">Engineering SOP</strong> with 0.91 calibrated probability.
-          </p>
         </div>
 
-        <div class="space-y-2 border border-pink-100 rounded-2xl p-4 bg-white shadow-2xs">
+        <div class="space-y-2 border border-rose-100 rounded-2xl p-4 bg-white">
           <div class="flex items-center justify-between">
             <span class="font-bold text-slate-800 text-xs uppercase tracking-wide">3. PRIMITIVE: Noul (preserves_audit)</span>
-            <span id="modal-preserves" class="font-mono text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+            <span id="modal-preserves" class="font-mono text-xs text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
               0.95 (YES)
             </span>
           </div>
-          <p class="text-[11px] text-slate-500">
-            Calibrated probability that financial and invoice records are preserved.
-          </p>
         </div>
 
-        <div class="p-3.5 bg-slate-900 rounded-2xl text-slate-100 font-mono text-[11px] space-y-1.5 shadow-xs">
-          <div class="text-slate-400"># Deterministic Python Formula in Code:</div>
-          <div class="text-pink-300">Score = (Relevance * 30) + (DirectProb * 25) + (AuditProb * 15)</div>
+        <div class="p-4 bg-slate-900 rounded-2xl text-slate-100 font-mono text-[11px] space-y-2 shadow-xs">
+          <div class="text-slate-400">Deterministic Scoring Formula:</div>
+          <div class="text-rose-300">Score = (Relevance * 30) + (DirectProb * 25) + (AuditProb * 15)</div>
           <div class="text-slate-300 pt-1">
             Calculated: (2.0 * 30) + (0.96 * 25) + (0.95 * 15) = <strong id="modal-score" class="text-emerald-400">96.8</strong> / 100
           </div>
@@ -824,32 +1029,40 @@
       </div>
     </div>
 
-    <div class="pt-4 border-t border-pink-100 flex justify-end">
+    <div class="pt-4 border-t border-rose-100 flex justify-end">
       <button id="drawer-close-btn" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors">
-        Dismiss Inspector
+        Dismiss
       </button>
     </div>
   </div>
 
-  <!-- JAVASCRIPT & WEBGL SHADER SCRIPT -->
   <script>
-    // PAGE NAVIGATION CONTROLLER
     function navigateTo(pageId) {
-      document.querySelectorAll('.page-view').forEach(page => page.classList.add('hidden'));
-      const activePage = document.getElementById('page-' + pageId);
-      if (activePage) activePage.classList.remove('hidden');
+      const allViews = document.querySelectorAll('.page-view');
+      allViews.forEach(view => {
+        view.classList.remove('active-view');
+      });
 
-      ['landing', 'studio', 'corpus', 'evals'].forEach(tab => {
+      const targetView = document.getElementById('view-' + pageId);
+      if (targetView) {
+        targetView.classList.add('active-view');
+      }
+
+      const tabs = ['landing', 'studio', 'corpus', 'evals'];
+      tabs.forEach(tab => {
         const btn = document.getElementById('tab-' + tab);
-        if (tab === pageId) {
-          btn.className = 'px-3.5 py-1.5 rounded-xl transition-all font-semibold bg-white text-primary-600 shadow-xs border border-pink-100';
-        } else {
-          btn.className = 'px-3.5 py-1.5 rounded-xl transition-all text-slate-600 hover:text-slate-900';
+        if (btn) {
+          if (tab === pageId) {
+            btn.className = 'px-4 py-1.5 rounded-xl transition-all font-semibold metallic-badge-active';
+          } else {
+            btn.className = 'px-4 py-1.5 rounded-xl transition-all text-slate-600 hover:text-slate-900 hover:bg-rose-50/50';
+          }
         }
       });
+
+      window.scrollTo(0, 0);
     }
 
-    // SIDEBAR TOGGLE
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('toggle-sidebar');
     const navTexts = document.querySelectorAll('.nav-text');
@@ -876,7 +1089,6 @@
       });
     }
 
-    // INSPECTOR DRAWER
     const drawer = document.getElementById('inspector-drawer');
     const closeBtn = document.getElementById('close-inspector');
     const drawerCloseBtn = document.getElementById('drawer-close-btn');
@@ -894,7 +1106,32 @@
     if (closeBtn) closeBtn.addEventListener('click', () => drawer.classList.add('translate-x-full'));
     if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', () => drawer.classList.add('translate-x-full'));
 
-    // WEBGL AMBIENT FLUID SHADER
+    function setLandingQuery(q) {
+      document.getElementById('landing-query-input').value = q;
+      runLandingEvaluation();
+    }
+
+    function runLandingEvaluation() {
+      const btn = document.getElementById('landing-run-btn');
+      btn.innerHTML = '<span>Evaluating...</span>';
+      setTimeout(() => {
+        btn.innerHTML = '<span>Evaluate with Jev</span><span class="font-mono text-[10px] bg-white/20 px-1.5 py-0.5 rounded">78ms</span>';
+      }, 250);
+    }
+
+    function setStudioQuery(q) {
+      document.getElementById('studio-search-input').value = q;
+      executeStudioSearch();
+    }
+
+    function executeStudioSearch() {
+      const btn = document.getElementById('studio-execute-btn');
+      btn.innerHTML = '<span>Re-ranking...</span>';
+      setTimeout(() => {
+        btn.innerHTML = '<span>Re-rank</span><span class="font-mono text-[11px] bg-white/20 px-1.5 py-0.5 rounded">84ms</span>';
+      }, 300);
+    }
+
     const canvas = document.getElementById('shader-canvas');
     const gl = canvas.getContext('webgl');
 
@@ -920,23 +1157,36 @@
         uniform float u_time;
 
         void main() {
-          vec2 st = gl_FragCoord.xy / u_resolution.xy;
-          st.y *= u_resolution.y / u_resolution.x;
+          vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+          uv.y *= u_resolution.y / u_resolution.x;
 
-          float t = u_time * 0.18;
-          vec2 p = st * 3.0;
+          float t = u_time * 0.24;
+          vec2 p = uv * 3.0;
 
-          float q = sin(p.x + t) * cos(p.y + t) + sin(p.y * 1.5 - t * 0.8);
-          float wave = sin(q * 2.5 + t);
+          float w1 = sin(p.x * 1.6 + t) * cos(p.y * 1.3 + t * 0.85);
+          float w2 = sin(p.y * 2.2 - t * 0.65) * cos(p.x * 1.9 + t * 1.15);
+          float h = w1 + w2;
 
-          // E551BA (Electric Pink) & FDA4AF (Soft Rose) & Pure White
-          vec3 color1 = vec3(0.898, 0.318, 0.729);
-          vec3 color2 = vec3(0.992, 0.643, 0.686);
-          vec3 white = vec3(0.98, 0.98, 0.99);
+          float dx = cos(p.x * 1.6 + t) * cos(p.y * 1.3 + t * 0.85) * 1.6;
+          float dy = sin(p.x * 1.6 + t) * -sin(p.y * 1.3 + t * 0.85) * 1.3;
+          vec3 normal = normalize(vec3(-dx, -dy, 1.3));
 
-          float mixFactor = smoothstep(-1.0, 1.0, wave);
-          vec3 mixedPink = mix(color1, color2, sin(st.x * 3.14 + t * 0.5) * 0.5 + 0.5);
-          vec3 finalColor = mix(white, mixedPink, mixFactor * 0.35);
+          vec3 lightDir = normalize(vec3(0.55, 0.85, 1.0));
+          vec3 viewDir = vec3(0.0, 0.0, 1.0);
+          vec3 halfDir = normalize(lightDir + viewDir);
+
+          float diff = max(dot(normal, lightDir), 0.0);
+          float spec = pow(max(dot(normal, halfDir), 0.0), 36.0);
+
+          vec3 chromeRose = vec3(0.96, 0.35, 0.52);
+          vec3 deepRose = vec3(0.75, 0.08, 0.28);
+          vec3 platinum = vec3(1.0, 0.96, 0.98);
+
+          vec3 baseMetal = mix(deepRose, chromeRose, h * 0.5 + 0.5);
+          vec3 metallicReflection = baseMetal + (platinum * spec * 0.65);
+
+          vec3 porcelain = vec3(0.98, 0.972, 0.98);
+          vec3 finalColor = mix(porcelain, metallicReflection, 0.40);
 
           gl_FragColor = vec4(finalColor, 1.0);
         }
