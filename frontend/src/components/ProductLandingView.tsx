@@ -1,9 +1,7 @@
 'use client'
 
 import { NavigationTab } from '@/types/NavigationTab'
-import { ProductBenchmarksTable } from './ProductBenchmarksTable'
 import { ProductLandingHero } from './ProductLandingHero'
-import { ProductPrimitivesSection } from './ProductPrimitivesSection'
 
 interface ProductLandingViewProps {
   onNavigate: (tab: NavigationTab) => void
@@ -14,33 +12,20 @@ export function ProductLandingView({ onNavigate }: ProductLandingViewProps) {
     onNavigate('studio')
   }
 
-  function handleExploreCorpus() {
-    onNavigate('corpus')
-  }
-
   return (
-    <div className="max-w-6xl mx-auto px-6 pt-12 pb-24 space-y-20 w-full">
-      <ProductLandingHero
-        onLaunchStudio={handleLaunchStudio}
-        onExploreCorpus={handleExploreCorpus}
-      />
-      <ProductPrimitivesSection />
-      <ProductBenchmarksTable />
-      <section className="rounded-3xl p-10 bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-rose-600/20">
-        <div className="space-y-2 text-center md:text-left">
-          <h3 className="text-2xl font-bold tracking-tight">Ready to test real queries?</h3>
-          <p className="text-xs text-rose-100 max-w-lg">
-            Open the Search Studio to run live queries against our seeded enterprise document corpus
-            and observe parallel BM25 and Jev evaluations.
-          </p>
+    <div className="flex-1 flex flex-col justify-between">
+      <div className="max-w-6xl mx-auto px-6 pt-12 pb-20 w-full">
+        <ProductLandingHero onLaunchStudio={handleLaunchStudio} />
+      </div>
+
+      <footer className="border-t border-black/[0.07] px-8 py-8 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 bg-white gap-4">
+        <div>PrismOne Decision Studio · Powered by TypeSafe AI Jev</div>
+        <div className="flex items-center gap-6 font-mono text-[11px]">
+          <span>System One Architecture</span>
+          <span>RLCD Calibrated</span>
+          <span>SQLite FTS5</span>
         </div>
-        <button
-          onClick={handleLaunchStudio}
-          className="px-8 py-4 rounded-2xl bg-white text-rose-700 font-bold text-sm hover:bg-rose-50 transition-all shadow-md shrink-0"
-        >
-          Open Search Studio Now
-        </button>
-      </section>
+      </footer>
     </div>
   )
 }
